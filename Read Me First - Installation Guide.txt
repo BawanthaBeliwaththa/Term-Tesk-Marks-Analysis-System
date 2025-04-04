@@ -1,0 +1,20 @@
+1.) Install Python3 on your PC to run the App : https://www.python.org/downloads/
+
+2.) Install XAMPP on your PC to run the local server : https://www.apachefriends.org/download.html
+
+3.) Install any code editor. (I prefer Visual Studio Code) : https://code.visualstudio.com/download
+
+4.) a) Install required pips using the req.txt by,
+	pip install -r req.txt
+
+4.) b) Insytall required pips manually,
+	pip install Flask==2.3.2
+	pip install Flask-MySQLdb==1.0.1
+	pip install mysqlclient==2.2.0
+	pip install reportlab==4.0.4
+	pip install fpdf2==2.7.7
+	pip install python-dotenv==1.0.0
+
+5.) You are all set. Now just run the file using a python debugger (F5) or without a debugger (CTRL + F5)
+
+6.) You can visit the App by using the URL : http://127.0.0.1:5000/

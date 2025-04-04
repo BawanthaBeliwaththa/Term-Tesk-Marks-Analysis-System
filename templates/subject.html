@@ -1,0 +1,100 @@
+{% include 'header.html' %}
+<body>
+ {% include 'top_menus.html' %}
+  <div class="container">        
+      {% include 'left_menus.html' %}    
+      <div class="content">
+        <div class="container-fluid">   	
+            <div class="row">
+                <a href="#"><strong><span class="ti-book"></span> Subject Management</strong></a>
+                <hr>		
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h3 class="panel-title">Subject List</h3>
+                        </div>
+                        
+                    </div>
+                </div>
+                <table id="subjectList" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Subject</th>
+                            <th>Code</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      {% for subject in subjects %}
+                      <tr>
+                        <td>{{ subject.subject_id }}</td>
+                        <td>{{ subject.subject }}</td>
+                        <td>{{ subject.code }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_subject', subject_id=subject.subject_id) }}" 
+                               class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{{ url_for('delete_subject', subject_id=subject.subject_id) }}" 
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to delete this subject?')">Delete</a>
+                        </td>
+                      </tr> 
+                    {% endfor %}	  
+                    </tbody>
+                </table>
+            </div>
+        </div>	
+    </div>
+  </div>
+  
+  <!-- Subject Modal -->
+  <div id="subjectModal" class="modal fade">
+    <div class="modal-dialog">
+        <form method="post" id="subjectForm" action="{{ url_for('save_subject') }}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add New Subject</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Subject ID</label>
+                        <input type="text" class="form-control" name="subject_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject Name</label>
+                        <input type="text" class="form-control" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject Code</label>
+                        <input type="text" class="form-control" name="code" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="action" value="insert">
+                    <input type="submit" name="save" id="save" class="btn btn-info" value="Save">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+
+  <script>
+  $(document).ready(function() {
+      // Initialize DataTable
+      $('#subjectList').DataTable();
+      
+      // Delete confirmation
+      $('.btn-danger').click(function() {
+          return confirm('Are you sure you want to delete this subject?');
+      });
+      
+      // Add Subject modal
+      $('#addSubject').click(function() {
+          $('#subjectModal').modal('show');
+      });
+  });
+  </script>
+</body>
+</html>

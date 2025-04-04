@@ -1,0 +1,96 @@
+{% include 'header.html' %}
+<body>
+ {% include 'top_menus.html' %}
+  <div class="container">        
+      {% include 'left_menus.html' %}    
+	  <div class="content">
+		<div class="container-fluid">    			
+			<div class="alert alert-success fade in">
+			  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			  <strong><span class="ti ti-announcement fa-2x"></span> </strong> <strong>&nbsp;&nbsp;Welcome to School Results Analysis System</strong>
+			</div>						
+			<div class="row">
+				<div class="col-lg-3 col-sm-6">
+					<div class="card">
+						<div class="content">
+							<div class="row">
+								<div class="col-xs-5">
+									<div class="icon-big icon-warning text-center">
+										<i class="ti-user"></i>
+									</div>
+								</div>
+								<div class="col-xs-7">
+									<div class="numbers">
+										<p>Students</p>										
+									</div>
+								</div>
+							</div>
+							<a href="{{ url_for('student') }}">
+								<div class="footer">
+								<hr />
+								<div class="stats">
+									<i class="ti-arrow-right"></i> Manage
+								</div>
+							</div>
+						</a>
+						</div>
+					</div>
+				</div>				
+				<div class="col-lg-3 col-sm-6">
+					<div class="card">
+						<div class="content">
+							<div class="row">
+								<div class="col-xs-5">
+									<div class="icon-big icon-info text-center">
+										<i class="ti-id-badge"></i>
+									</div>
+								</div>
+								<div class="col-xs-7">
+									<div class="numbers">
+										<p>Teachers</p>									   
+									</div>
+								</div>
+							</div>
+							<a href="{{ url_for('teacher') }}">
+								<div class="footer">
+								<hr />
+								<div class="stats">
+									<i class="ti-arrow-right"></i> Manage
+								</div>
+							</div>
+						</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3 col-sm-6">
+					<div class="card">
+						<div class="content">
+							<div class="row">
+								<div class="col-xs-5">
+									<div class="icon-big icon-success text-center">
+										<i class="ti-bar-chart"></i>
+									</div>
+								</div>
+								<div class="col-xs-7">
+									<div class="numbers">
+										<p>Results</p>										
+									</div>
+								</div>
+							</div>
+							<a href="{{ url_for('results') }}">
+								<div class="footer">
+								<hr />
+								<div class="stats">
+									<i class="ti-arrow-right"></i> Analyze
+								</div>
+							</div>
+						</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+	</div>
+  </div>
+</body>
+</html>

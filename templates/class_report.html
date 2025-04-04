@@ -1,0 +1,138 @@
+{% include 'header.html' %}
+<body>
+ {% include 'top_menus.html' %}
+  <div class="container">        
+      {% include 'left_menus.html' %}    
+      <div class="content">
+        <div class="container-fluid">   	
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><i class="fa fa-users"></i> Class Performance Report</h3>
+                        </div>
+                        <form method="get" action="{{ url_for('class_report') }}">
+                            <div class="box-body">						
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Select Class</label>
+                                            <select name="class_id" class="form-control" onchange="this.form.submit()" required>
+                                                <option value="">-- Select Class --</option>
+                                                {% for class in classes %}
+                                                    <option value="{{ class.class_id }}" 
+                                                        {% if selected_class == class.class_id %}selected{% endif %}>
+                                                        {{ class.name }} ({{ class.section_id }})
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {% if selected_class %}
+                                    <div class="col-md-4 text-right">
+                                        <form method="post" action="{{ url_for('generate_class_report') }}">
+                                            <input type="hidden" name="class_id" value="{{ selected_class }}">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fa fa-file-pdf-o"></i> Generate PDF Report
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if class_data %}
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">Class Information</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <strong>Class:</strong> {{ class_data.name }}
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <strong>Section:</strong> {{ class_data.section }}
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <strong>Students:</strong> {{ students_data|length }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <h4>Subject Averages</h4>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Subject</th>
+                                                    <th>Average Marks</th>
+                                                    <th>Grade</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for subject in subject_averages %}
+                                                <tr>
+                                                    <td>{{ subject.subject }}</td>
+                                                    <td>{{ "%.2f"|format(subject.class_avg) }}</td>
+                                                    <td>
+                                                        {% if subject.class_avg >= 75 %}A
+                                                        {% elif subject.class_avg >= 65 %}B
+                                                        {% elif subject.class_avg >= 50 %}C
+                                                        {% elif subject.class_avg >= 35 %}S
+                                                        {% else %}F
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        
+                                        <h4>Student Rankings</h4>
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Rank</th>
+                                                    <th>Student ID</th>
+                                                    <th>Name</th>
+                                                    <th>Average</th>
+                                                    <th>Grade</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for student in students_data %}
+                                                <tr>
+                                                    <td>{{ student.rank }}</td>
+                                                    <td>{{ student.student_id }}</td>
+                                                    <td>{{ student.name }}</td>
+                                                    <td>{{ "%.2f"|format(student.average) }}</td>
+                                                    <td>
+                                                        {% if student.average >= 75 %}A
+                                                        {% elif student.average >= 65 %}B
+                                                        {% elif student.average >= 50 %}C
+                                                        {% elif student.average >= 35 %}S
+                                                        {% else %}F
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% elif selected_class %}
+                                <div class="alert alert-info mt-4">
+                                    No results found for this class.
+                                </div>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>	
+    </div>
+  </div>
+</body>
+</html>

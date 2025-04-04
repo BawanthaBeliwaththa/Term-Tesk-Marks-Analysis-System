@@ -1,0 +1,6 @@
+Flask==2.3.2
+Flask-MySQLdb==1.0.1
+mysqlclient==2.2.0
+reportlab==4.0.4
+fpdf2==2.7.7
+python-dotenv==1.0.0

@@ -1,0 +1,32 @@
+{% include 'header.html' %}
+<script src="{{ url_for('static',filename='js/sections.js') }}"></script>
+<body>
+	{% include 'top_menus.html' %}
+	<div class="container">        
+		{% include 'left_menus.html' %}    
+		<div class="content">
+			<div class="container-fluid">   	
+				<div class="row">
+				<a href="#"><strong><span class="ti-crown"></span> Edit Sections</strong></a>
+				<hr>
+				{% for section in sections %}
+					<form method="post" id="sectionForm" action="{{ url_for('save_sections')}}">
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="section_name" class="control-label">Section Name*</label>
+								<input type="text" class="form-control" id="section_name" name="section_name" placeholder="Section Name" value="{{section.section}}" required>							
+							</div>									
+						</div>
+						<div class="modal-footer">
+							<input type="hidden" name="sectionid" id="sectionid" value="{{section.section_id}}"/>
+							<input type="hidden" name="action" id="action" value="updateSection" />
+							<input type="submit" name="save" id="save" class="btn btn-info" value="Save" />
+						</div>				
+					</form>
+				{% endfor %}						
+				</div>	
+			</div>
+		</div>	
+	</div> 
+</body>
+</html>

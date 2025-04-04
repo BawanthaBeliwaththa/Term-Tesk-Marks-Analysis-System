@@ -1,0 +1,49 @@
+{% include 'header.html' %}
+<script src="{{ url_for('static',filename='js/classes.js') }}"></script>
+<body>
+	{% include 'top_menus.html' %}
+	<div class="container">        
+		{% include 'left_menus.html' %}    
+		<div class="content">
+			<div class="container-fluid">   	
+				<div class="row">
+				<a href="#"><strong><span class="ti-crown"></span> Edit Class</strong></a>
+				<hr>
+				{% for class in classes %}
+					<form method="post" id="classForm" action="{{ url_for('save_class')}}">					
+						<div class="form-group">
+							<label for="firstname" class="control-label">Class Name*</label>
+							<input type="text" class="form-control" id="cname" name="cname" placeholder="Class Name" value="{{class.name}}" required>					
+						</div>	
+						<div class="form-group">
+							<label for="mname" class="control-label">Sections*</label>	
+							<select name="sectionid" id="sectionid" class="form-control" required>
+								<option value="">Select Section</option>
+								{% for section in sections %}
+									<option value="{{section.section_id}}">{{section.section}}</option>	
+								{% endfor %}		 
+							</select>
+						</div>	
+						<div class="form-group">
+							<label for="mname" class="control-label">Assign Class Teacher*</label>	
+							<select name="teacherid" id="teacherid" class="form-control" required>
+								<option value="">--Select--</option>
+								{% for teacher in teachers %}
+									<option value="{{teacher.teacher_id}}">{{teacher.teacher}}</option>	
+								{% endfor %}	 
+							</select>
+						</div>							
+						<div class="modal-footer">
+							<input type="hidden" name="classid" id="classid" value="{{class.id}}" />
+							<input type="hidden" name="action" id="action" value="updateClass" />
+							<input type="submit" name="save" id="save" class="btn btn-info" value="Save" />
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>						
+					</form>
+				{% endfor %}						
+				</div>	
+			</div>
+		</div>	
+	</div> 
+</body>
+</html>

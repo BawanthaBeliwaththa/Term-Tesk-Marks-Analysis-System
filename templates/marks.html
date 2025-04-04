@@ -1,0 +1,168 @@
+{% include 'header.html' %}
+<body>
+ {% include 'top_menus.html' %}
+  <div class="container">        
+      {% include 'left_menus.html' %}    
+      <div class="content">
+        <div class="container-fluid">   	
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><i class="fa fa-edit"></i> Input Student Marks</h3>
+                        </div>
+                        <form id="marksForm">
+                            <div class="box-body">
+                                <div id="message" class="alert" style="display: none;"></div>						
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="classid">Class*</label>
+                                            <select id="classid" name="class" class="form-control" required>
+                                                <option value="">Select Class</option>
+                                                {% for class in classes %}
+                                                    <option value="{{class.class_id}}">{{class.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="studentid">Student*</label>
+                                            <select name="student" id="studentid" class="form-control" required disabled>
+                                                <option value="">Select Class First</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="subjectid">Subject*</label>
+                                            <select name="subject" id="subjectid" class="form-control" required>
+                                                <option value="">Select Subject</option>
+                                                {% for subject in subjects %}
+                                                    <option value="{{subject.subject_id}}">{{subject.subject}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="term">Term*</label>
+                                            <select name="term" id="term" class="form-control" required>
+                                                <option value="1">Term 1</option>
+                                                <option value="2">Term 2</option>
+                                                <option value="3">Term 3</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="marks">Marks*</label>
+                                            <input type="number" class="form-control" id="marks" 
+                                                   name="marks" min="0" max="100" step="0.01" 
+                                                   placeholder="0-100" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="year">Year*</label>
+                                            <select name="year" id="year" class="form-control" required>
+                                                <option value="{{ current_year }}">{{ current_year }}</option>
+                                                <option value="{{ current_year - 1 }}">{{ current_year - 1 }}</option>
+                                                <option value="{{ current_year - 2 }}">{{ current_year - 2 }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save"></i> Submit Marks
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>	
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Load students when class is selected
+    $('#classid').change(function() {
+        const classId = $(this).val();
+        const $studentSelect = $('#studentid');
+        
+        if (!classId) {
+            $studentSelect.html('<option value="">Select Class First</option>');
+            $studentSelect.prop('disabled', true);
+            return;
+        }
+
+        $studentSelect.html('<option value="">Loading students...</option>');
+        
+        $.get(`/get_students?class_id=${classId}`, function(students) {
+            let options = '<option value="">Select Student</option>';
+            if (students.length > 0) {
+                students.forEach(student => {
+                    options += `<option value="${student.student_id}">${student.name}</option>`;
+                });
+            } else {
+                options = '<option value="">No students found</option>';
+            }
+            $studentSelect.html(options).prop('disabled', false);
+        }).fail(function() {
+            $('#message').html('<div class="alert alert-danger">Error loading students</div>')
+                        .show();
+            $studentSelect.html('<option value="">Error loading students</option>');
+        });
+    });
+
+    // Form submission
+    $('#marksForm').submit(function(e) {
+        e.preventDefault();
+        const $form = $(this);
+        const $submitBtn = $form.find('button[type="submit"]');
+        const originalText = $submitBtn.html();
+        
+        // Validate marks
+        const marks = parseFloat($('#marks').val());
+        if (isNaN(marks) || marks < 0 || marks > 100) {
+            $('#message').html('<div class="alert alert-danger">Marks must be between 0 and 100</div>')
+                        .show();
+            return;
+        }
+
+        $submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Saving...');
+        
+        $.ajax({
+            type: 'POST',
+            url: '/input_marks',
+            data: $form.serialize(),
+            success: function(response) {
+                $('#message').html(`<div class="alert alert-success">${response.message || 'Marks saved successfully'}</div>`)
+                            .show();
+                $form[0].reset();
+                $('#studentid').html('<option value="">Select Class First</option>')
+                             .prop('disabled', true);
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON?.error || 'Failed to save marks';
+                $('#message').html(`<div class="alert alert-danger">Error: ${errorMsg}</div>`)
+                            .show();
+            },
+            complete: function() {
+                $submitBtn.prop('disabled', false).html(originalText);
+                setTimeout(() => $('#message').fadeOut(), 5000);
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% include 'header.html' %}
+<body background="../static/images/2.jpg">
+ {% include 'top_menus.html' %}
+  <div class="container">        
+      {% include 'left_menus.html' %}    
+      <div class="content">
+        <div class="container-fluid">   	
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><i class="fa fa-search"></i> Select Student</h3>
+                        </div>
+                        <form id="form1" action="{{ url_for('generate_report') }}" method="post" accept-charset="utf-8">
+                            <div class="box-body">						
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="classid">Class</label><small class="req"> *</small>
+                                            <select id="classid" name="classid" class="form-control" required>
+                                                <option value="">Select Class</option>
+                                                {% for class in classes %}								
+                                                    <option value="{{class.id}}">{{class.name}}</option>				
+                                                {% endfor %}												
+                                            </select>
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="sectionid">Section</label><small class="req"> *</small>
+                                                <select name="sectionid" id="sectionid" class="form-control" required>
+                                                    <option value="">Select Section</option>
+                                                    {% for section in sections %}
+                                                        <option value="{{section.section_id}}">{{section.section}}</option>	
+                                                    {% endfor %}
+                                                </select>
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div> 	
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="studentid">Student</label><small class="req"> *</small>
+                                            <select name="studentid" id="studentid" class="form-control" required>
+                                                <option value="">Select Student</option>
+                                                {% for student in students %}
+                                                    <option value="{{student.id}}">{{student.name}} ({{student.admission_no}})</option>
+                                                {% endfor %}
+                                            </select>
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div> 										
+                                </div>
+                            </div>
+                            <div class="box-footer">
+                                <button type="submit" id="search" name="search" value="search" style="margin-bottom:10px;" class="btn btn-primary btn-sm  checkbox-toggle"><i class="fa fa-search"></i> Generate Report</button> <br>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>	
+    </div>
+  </div>
+  </body>
+</html>

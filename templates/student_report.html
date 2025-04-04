@@ -1,0 +1,184 @@
+{% include 'header.html' %}
+<body>
+ {% include 'top_menus.html' %}
+  <div class="container">        
+      {% include 'left_menus.html' %}    
+      <div class="content">
+        <div class="container-fluid">   	
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><i class="fa fa-file-text"></i> Student Report</h3>
+                        </div>
+                        <form method="get" action="{{ url_for('student_report') }}" id="reportForm">
+                            <div class="box-body">						
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Select Class</label>
+                                            <select name="class_id" class="form-control" id="classSelect" required>
+                                                <option value="">-- Select Class --</option>
+                                                {% for class in classes %}
+                                                    <option value="{{ class.class_id }}" 
+                                                        {% if request.args.get('class_id') == class.class_id %}selected{% endif %}>
+                                                        {{ class.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Select Student</label>
+                                            <select name="student_id" class="form-control" id="studentSelect" required {% if not students %}disabled{% endif %}>
+                                                <option value="">-- Select Student --</option>
+                                                {% for student in students %}
+                                                    <option value="{{ student.student_id }}" 
+                                                        {% if selected_student == student.student_id %}selected{% endif %}>
+                                                        {{ student.name }} ({{ student.student_id }})
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-primary" style="margin-top:25px;">
+                                            View Report
+                                        </button>
+                                        {% if selected_student %}
+                                        <button type="button" id="generateStudentPdfBtn" class="btn btn-success" style="margin-top:25px;">
+                                            <i class="fa fa-file-pdf-o"></i> Student PDF
+                                        </button>
+                                        {% endif %}
+                                        {% if request.args.get('class_id') %}
+                                        <button type="button" id="generateClassPdfBtn" class="btn btn-info" style="margin-top:25px;">
+                                            <i class="fa fa-file-pdf-o"></i> Class PDF
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if student_data %}
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">Student Information</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <strong>Student ID:</strong> {{ student_data.student_id }}
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <strong>Name:</strong> {{ student_data.name }}
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <strong>Class:</strong> {{ student_data.class_name }}
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <strong>Class Rank:</strong> {{ class_rank }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <h4>Academic Performance</h4>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Subject</th>
+                                                    <th>Term</th>
+                                                    <th>Marks</th>
+                                                    <th>Grade</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for mark in marks_data %}
+                                                <tr>
+                                                    <td>{{ mark.subject }}</td>
+                                                    <td>Term {{ mark.term }}</td>
+                                                    <td>{{ mark.marks }}</td>
+                                                    <td>
+                                                        {% if mark.marks >= 75 %}A
+                                                        {% elif mark.marks >= 65 %}B
+                                                        {% elif mark.marks >= 50 %}C
+                                                        {% elif mark.marks >= 35 %}S
+                                                        {% else %}F
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>	
+    </div>
+  </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Load students when class changes
+    $('#classSelect').change(function() {
+        const classId = $(this).val();
+        const $studentSelect = $('#studentSelect');
+        
+        if (!classId) {
+            $studentSelect.html('<option value="">-- Select Class First --</option>');
+            $studentSelect.prop('disabled', true);
+            return;
+        }
+
+        $studentSelect.html('<option value="">Loading students...</option>');
+        
+        $.get('{{ url_for("get_students") }}', { class_id: classId })
+            .done(function(students) {
+                let options = '<option value="">-- Select Student --</option>';
+                students.forEach(function(student) {
+                    options += `<option value="${student.student_id}">${student.name} (${student.student_id})</option>`;
+                });
+                $studentSelect.html(options).prop('disabled', false);
+            })
+            .fail(function() {
+                $studentSelect.html('<option value="">Error loading students</option>');
+            });
+    });
+
+    // Handle Student PDF generation
+    $('#generateStudentPdfBtn').click(function() {
+        const form = $('#reportForm');
+        const studentId = form.find('[name="student_id"]').val();
+        const classId = form.find('[name="class_id"]').val();
+        
+        if (!studentId) {
+            alert('Please select a student first');
+            return;
+        }
+
+        window.location.href = '{{ url_for("generate_student_report") }}?student_id=' + studentId + '&class_id=' + classId;
+    });
+
+    // Handle Class PDF generation
+    $('#generateClassPdfBtn').click(function() {
+        const classId = $('#classSelect').val();
+        
+        if (!classId) {
+            alert('Please select a class first');
+            return;
+        }
+
+        window.location.href = '{{ url_for("generate_class_report") }}?class_id=' + classId;
+    });
+});
+</script>
+</body>
+</html>
